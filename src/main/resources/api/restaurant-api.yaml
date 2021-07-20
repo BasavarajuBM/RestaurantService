@@ -1,0 +1,196 @@
+openapi: 3.0.0
+info:
+  title: Restuarant service API
+  description: API's to register the restaurant and allows the user to search for the restaurant
+  version: 0.0.1
+  contact: basavaraju.bm4@gmail.com
+
+paths:
+  /restaurants/register:
+    post:
+      operationId: register
+      summary: Register Restaurant
+      description: Registers the restaurant if not exists and is all the necessary values are provided
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RestaurantDTO'
+      responses:
+        201:    # status code
+          description: Restaurant registered
+        400:
+          description: Invalid request or missing parameters or issue due to incomplete request
+  /restaurants/publish:
+    post:
+      operationId: publish
+      summary: Publish Menu for the Restaurant
+      description: Publishs the Menu for the restaurant
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PublishDTO'
+      responses:
+        201:    # status code
+          description: Menu Published
+        400:
+          description: Invalid request or missing parameters or issue due to incomplete request
+
+  /restaurants/search:
+    post:
+      operationId: search
+      summary: Publish Menu for the Restaurant
+      description: Publishs the Menu for the restaurant
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SearchDTO'
+      responses:
+        200: # status code
+          description: Menu Published
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ResultDTO'
+        400:
+          description: Invalid request or missing parameters or issue due to incomplete request
+components:
+  schemas:
+    RestaurantDTO:
+      type: object
+      required:
+        - adressess
+        - contactNumbers
+        - geoLocation
+        - restaurantName
+        - operationHours
+      properties:
+        restaurantName:
+          type: string
+          description: Name of the restaurant
+        adressess:
+          type: array
+          items:
+            $ref: '#/components/schemas/AddressDTO'
+        geoLocation:
+          type: string
+          description: Location(area) of the restaurant
+          example:
+            Punggol
+        operationHours:
+          type: array
+          items:
+           $ref: '#/components/schemas/OperationTime'
+        contactNumbers:
+          type: array
+          items:
+            $ref: '#/components/schemas/ContactNumbersDTO'
+
+    OperationTime:
+      type: object
+      required:
+        - day
+        - time
+      properties:
+        day:
+          type: string
+          enum:
+            - SUNDAY
+            - MONDAY
+            - TUESDAY
+            - WEDNESDAY
+            - THURSDAY
+            - FRIDAY
+            - SATURDAY
+        time:
+          type: string
+          example:
+            11:00 AM to 10:00 PM
+
+    AddressDTO:
+      type: object
+      required:
+      properties:
+        streetName:
+          type: string
+          description: Name of the street
+          example:
+            Punggol Field
+        areaName:
+          type: string
+          description: Name of the area
+          example:
+            Punggol
+        postalCode:
+          type: integer
+          example:
+            821106
+        country:
+          type: string
+          example:
+            Singapore
+
+    ContactNumbersDTO:
+      type: object
+      required:
+        - contactNumber
+        - countryCode
+      properties:
+        countryCode:
+          type: string
+          example:
+            +65
+        contactNumber:
+          type: string
+          example:
+            12345678
+
+    PublishDTO:
+      type: object
+      properties:
+        restaurant:
+          type: object
+          required:
+          properties:
+            restaurantName:
+              type: string
+            geoLocation:
+              type: string
+        menu:
+          type: object
+          required:
+          properties:
+            menuItem:
+              type: string
+              example:
+                PannerTikka
+    SearchDTO:
+      type: object
+      properties:
+        menuItem:
+          type: string
+        restaurantName:
+          type: string
+        address:
+          $ref: '#/components/schemas/AddressDTO'
+        geoLocation:
+          type: string
+        operationTimings:
+          type: string
+    ResultDTO:
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/RestaurantDTO'
+      properties:
+        menu:
+          type: object
+          required:
+          properties:
+            menuItem:
+              type: string
+              example:
+                PannerTikka
