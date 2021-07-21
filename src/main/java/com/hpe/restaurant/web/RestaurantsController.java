@@ -20,12 +20,10 @@ import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -65,19 +63,27 @@ public class RestaurantsController implements RestaurantsApi {
     public ResponseEntity<List<ResultDTO>> search(@Parameter(in = ParameterIn.DEFAULT, description = "", schema=@Schema()) @Valid @RequestBody SearchDTO body) {
         List<Restaurant> restaurants=this.restaurantService.searchRestaurant(body);
         List<ResultDTO> resultDTOS=new ArrayList<>();
-        restaurants.forEach(restaurant -> {
-            ResultDTO resultDTO=new ResultDTO();
-            resultDTO.restaurantName(restaurant.getRestaurantName());
-            resultDTO.setGeoLocation(restaurant.getGeoLocation());
-            resultDTO.adressess(RestaurantHelper.populateAddressDTO(restaurant));
-            resultDTO.contactNumbers(RestaurantHelper.populateContactNumbersDTO(restaurant));
-            resultDTO.operationHours(RestaurantHelper.populateOperationtimeDTO(restaurant));
-            resultDTO.menu(RestaurantHelper.populateMenuDTO(restaurant));
-            resultDTOS.add(resultDTO);
-        });
+        RestaurantHelper.populatesResultDTO(restaurants, resultDTOS);
         return ResponseEntity.ok(resultDTOS);
     }
 
 
+    @Override
+    public ResponseEntity<Void> rate(@Parameter(in = ParameterIn.DEFAULT, description = "", schema=@Schema()) @Valid @RequestBody RatingDTO body) {
+        try {
+            restaurantService.rate(RestaurantHelper.prepareRating(body));
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<>(HttpStatus.CREATED);
+    }
+
+    @Override
+    public ResponseEntity<List<ResultDTO>> searchByRating(@Parameter(in = ParameterIn.PATH, description = "", required=true, schema=@Schema()) @PathVariable("menuRating") Integer menuRating, @Parameter(in = ParameterIn.PATH, description = "", required=true, schema=@Schema()) @PathVariable("restaurantRating") Integer restaurantRating) {
+        List<Restaurant> restaurants=this.restaurantService.searchRestaurantByRating(menuRating,restaurantRating);
+        List<ResultDTO> resultDTOS=new ArrayList<>();
+        RestaurantHelper.populatesResultDTO(restaurants, resultDTOS);
+        return ResponseEntity.ok(resultDTOS);
+    }
 
 }

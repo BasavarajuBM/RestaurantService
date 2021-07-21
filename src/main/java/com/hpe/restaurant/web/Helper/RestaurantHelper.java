@@ -1,6 +1,7 @@
 package com.hpe.restaurant.web.Helper;
 
 import com.hpe.restaurant.domain.entity.Menu;
+import com.hpe.restaurant.domain.entity.Rating;
 import com.hpe.restaurant.domain.entity.Restaurant;
 import com.hpe.restaurant.web.model.*;
 import org.jetbrains.annotations.NotNull;
@@ -19,6 +20,17 @@ public class RestaurantHelper {
         restaurant.setGeoLocation(publishDTOMenu.getRestaurant().getGeoLocation());
         menu.setRestaurant(restaurant);
         return menu;
+    }
+
+    public static Rating prepareRating(RatingDTO ratingDTO) {
+        Rating rating=new Rating();
+        rating.setMenuRating(Integer.valueOf(ratingDTO.getMenuRating().toString()));
+        rating.setRestaurantRating(Integer.valueOf(ratingDTO.getRestaurantRating().toString()));
+        Restaurant restaurant = new Restaurant();
+        restaurant.setRestaurantName(ratingDTO.getRestaurant().getRestaurantName());
+        restaurant.setGeoLocation(ratingDTO.getRestaurant().getGeoLocation());
+        rating.setRestaurant(restaurant);
+        return rating;
     }
 
     @NotNull
@@ -71,5 +83,18 @@ public class RestaurantHelper {
             publishDTOMenu.menuItem(restaurant.getMenu().getMenuItem());
         }
         return publishDTOMenu;
+    }
+
+    public static void populatesResultDTO(List<Restaurant> restaurants, List<ResultDTO> resultDTOS) {
+        restaurants.forEach(restaurant -> {
+            ResultDTO resultDTO = new ResultDTO();
+            resultDTO.restaurantName(restaurant.getRestaurantName());
+            resultDTO.setGeoLocation(restaurant.getGeoLocation());
+            resultDTO.adressess(RestaurantHelper.populateAddressDTO(restaurant));
+            resultDTO.contactNumbers(RestaurantHelper.populateContactNumbersDTO(restaurant));
+            resultDTO.operationHours(RestaurantHelper.populateOperationtimeDTO(restaurant));
+            resultDTO.menu(RestaurantHelper.populateMenuDTO(restaurant));
+            resultDTOS.add(resultDTO);
+        });
     }
 }

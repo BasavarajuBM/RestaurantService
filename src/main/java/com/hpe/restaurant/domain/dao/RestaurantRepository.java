@@ -22,4 +22,7 @@ public interface RestaurantRepository extends JpaRepository<Restaurant, Long> {
             " and b.areaName=:areaName and b.country=:country" +
             ") or a.geoLocation=:geoLocation")
     public List<Restaurant> findRestaurantsByAddressOrGeoLocation(Integer postalCode,String streetName,String areaName,String country, String geoLocation);
+
+    @Query(value = "select a from Restaurant a where a.id in (select b.restaurant from Rating b where b.menuRating=:menuRating or b.restaurantRating=:restaurantRating)")
+    public List<Restaurant> findRestaurantsByRating(Integer menuRating, Integer restaurantRating);
 }

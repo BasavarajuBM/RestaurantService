@@ -40,8 +40,8 @@ paths:
   /restaurants/search:
     post:
       operationId: search
-      summary: Publish Menu for the Restaurant
-      description: Publishs the Menu for the restaurant
+      summary: Search the restaurant based on criteria
+      description: searchs the restaurant
       requestBody:
         content:
           application/json:
@@ -49,7 +49,47 @@ paths:
               $ref: '#/components/schemas/SearchDTO'
       responses:
         200: # status code
-          description: Menu Published
+          description: List of Restaurants mathching the criteria
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ResultDTO'
+        400:
+          description: Invalid request or missing parameters or issue due to incomplete request
+  /restaurants/rate:
+    post:
+      operationId: rate
+      summary: Rate the Restaurant
+      description: Rates the restaurant
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RatingDTO'
+      responses:
+        201:    # status code
+          description: Menu and Restaurant rated
+        400:
+          description: Invalid request or missing parameters or issue due to incomplete request
+  /restaurants/menu-rating/{menuRating}/restaurant-rating/{restaurantRating}/search:
+    get:
+      operationId: searchByRating
+      summary: Search restaurant by rating
+      description: Search restaurant by menu rating or restaurant rating
+      parameters:
+        - name: menuRating
+          in: path
+          schema:
+            type: integer
+        - name: restaurantRating
+          in: path
+          schema:
+            type: integer
+      responses:
+        200: # status code
+          description: List of Restaurants mathching the criteria
           content:
             application/json:
               schema:
@@ -153,13 +193,7 @@ components:
       type: object
       properties:
         restaurant:
-          type: object
-          required:
-          properties:
-            restaurantName:
-              type: string
-            geoLocation:
-              type: string
+          $ref: '#/components/schemas/PublishDTORestaurant'
         menu:
           type: object
           required:
@@ -194,3 +228,32 @@ components:
               type: string
               example:
                 PannerTikka
+    RatingDTO:
+      type: object
+      properties:
+        menuRating:
+          type: integer
+          enum:
+            - 1
+            - 2
+            - 3
+            - 4
+            - 5
+        restaurantRating:
+          type: integer
+          enum:
+            - 1
+            - 2
+            - 3
+            - 4
+            - 5
+        restaurant:
+          $ref: '#/components/schemas/PublishDTORestaurant'
+
+    PublishDTORestaurant:
+      type: object
+      properties:
+        restaurantName:
+          type: string
+        geoLocation:
+          type: string
