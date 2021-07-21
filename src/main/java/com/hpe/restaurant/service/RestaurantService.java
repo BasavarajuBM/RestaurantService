@@ -6,24 +6,23 @@ import com.hpe.restaurant.domain.entity.Address;
 import com.hpe.restaurant.domain.entity.Rating;
 import com.hpe.restaurant.domain.entity.Restaurant;
 import com.hpe.restaurant.web.model.SearchDTO;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Service
+@RequiredArgsConstructor
 public class RestaurantService {
 
     @Autowired
-    private RestaurantRepository restaurantRepository;
+    private final RestaurantRepository restaurantRepository;
 
     @Autowired
-    private RatingRepository ratingRepository;
+    private final RatingRepository ratingRepository;
 
     public void register(Restaurant restaurant){
         setBidirectionalRelationForAddress(restaurant);
@@ -68,18 +67,24 @@ public class RestaurantService {
     }
 
     private void setBidirectionalRelationForOperationHours(Restaurant restaurant) {
-        restaurant.getOperationHours().stream().forEach(operationHours -> {
-            operationHours.setRestaurant(restaurant);
-        });
+        if(!CollectionUtils.isEmpty(restaurant.getOperationHours())){
+            restaurant.getOperationHours().stream().forEach(operationHours -> {
+                operationHours.setRestaurant(restaurant);
+            });
+        }
     }
     private void setBidirectionalRelationForContactNumbers(Restaurant restaurant) {
-        restaurant.getContactNumbers().stream().forEach(contactNumber -> {
-            contactNumber.setRestaurant(restaurant);
-        });
+        if(!CollectionUtils.isEmpty(restaurant.getContactNumbers())){
+            restaurant.getContactNumbers().stream().forEach(contactNumber -> {
+                contactNumber.setRestaurant(restaurant);
+            });
+        }
     }
     private void setBidirectionalRelationForAddress(Restaurant restaurant) {
-        restaurant.getAdressess().forEach(address -> {
-            address.setRestaurant(restaurant);
-        });
+        if(!CollectionUtils.isEmpty(restaurant.getAdressess())){
+            restaurant.getAdressess().forEach(address -> {
+                address.setRestaurant(restaurant);
+            });
+        }
     }
 }
