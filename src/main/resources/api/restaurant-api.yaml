@@ -21,7 +21,7 @@ paths:
           description: Restaurant registered
         400:
           description: Invalid request or missing parameters or issue due to incomplete request
-  /restaurants/publish:
+  /restaurants/menu/publish:
     post:
       operationId: publish
       summary: Publish Menu for the Restaurant

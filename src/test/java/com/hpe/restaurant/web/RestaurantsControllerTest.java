@@ -72,7 +72,7 @@ class RestaurantsControllerTest {
     void Test_publish_withoutIssues() throws Exception{
 
         doNothing().when(menuService).publish(RestaurantHelper.prepareMenu(getPublishDTOFull()));
-        mockMvc.perform(MockMvcRequestBuilders.post("/restaurants/publish")
+        mockMvc.perform(MockMvcRequestBuilders.post("/restaurants/menu/publish")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content(objectMapper.writeValueAsString(getPublishDTOFull())))
                 .andExpect(MockMvcResultMatchers.status().isCreated());
@@ -84,7 +84,7 @@ class RestaurantsControllerTest {
     @Test
     void Test_publish_missingparams() throws Exception{
         doThrow(RuntimeException.class).when(menuService).publish(any());
-        mockMvc.perform(MockMvcRequestBuilders.post("/restaurants/publish")
+        mockMvc.perform(MockMvcRequestBuilders.post("/restaurants/menu/publish")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content(objectMapper.writeValueAsString(getPublishDTOPartial())))
                 .andExpect(MockMvcResultMatchers.status().isBadRequest());
